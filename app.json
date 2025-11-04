@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "rn-first-app",
-    "slug": "rn-first-app",
+    "slug": "second-project",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -43,6 +43,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c2b40610-1547-44bb-9ae5-2c3410477147"
+      }
+    },
+    "owner": "lol-projects"
   }
 }
