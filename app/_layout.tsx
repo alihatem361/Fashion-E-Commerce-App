@@ -11,6 +11,7 @@ import { Text, View } from "react-native";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useColorScheme as useNativeColorScheme } from "react-native";
 
 export const unstable_settings = {
   anchor: "(tabs)",
@@ -18,6 +19,9 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const scheme = useNativeColorScheme();
+  console.log("Color scheme:", colorScheme);
+  console.log("Native color scheme:", scheme);
   const [isReady, setIsReady] = useState(false);
   const [initialRoute, setInitialRoute] = useState<string | null>(null);
   const router = useRouter();
@@ -78,6 +82,7 @@ export default function RootLayout() {
           name="product-details"
           options={{ headerShown: false, presentation: "card" }}
         />
+        <Stack.Screen name="test" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

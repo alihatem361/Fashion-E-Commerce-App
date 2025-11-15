@@ -1,8 +1,8 @@
+import { COLORS, SCREEN } from "@/constants/styles";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import {
-  Dimensions,
   Image,
   ScrollView,
   StyleSheet,
@@ -11,17 +11,7 @@ import {
   View,
 } from "react-native";
 
-const { width, height } = Dimensions.get("window");
-
-const COLORS = {
-  background: "#FDF5FF",
-  primary: "#FFB6E1",
-  secondary: "#D8B4E2",
-  text: "#1A1A1A",
-  textLight: "#666666",
-  white: "#FFFFFF",
-  card: "#F5E6FF",
-};
+const { width, height } = SCREEN;
 
 const sizes = ["S", "M", "L", "XL"];
 const colors = [

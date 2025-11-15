@@ -176,6 +176,13 @@ export default function HomeScreen() {
           <Text style={styles.resetButtonText}>View Onboarding Again</Text>
         </TouchableOpacity>
 
+        {/* go to test page */}
+        <TouchableOpacity
+          style={styles.resetButton}
+          onPress={() => router.push("/test")}
+        >
+          <Text style={styles.resetButtonText}>Go to Test Page</Text>
+        </TouchableOpacity>
         <View style={{ height: 100 }} />
       </ScrollView>
     </View>
