@@ -1,7 +1,8 @@
+import { products } from "@/constants/data";
 import { COLORS, SCREEN } from "@/constants/styles";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Image,
   ScrollView,
@@ -10,9 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
 const { width, height } = SCREEN;
-
 const sizes = ["S", "M", "L", "XL"];
 const colors = [
   { id: 1, name: "Pink", color: "#FFB6E1" },
@@ -23,24 +22,37 @@ const colors = [
 export default function ProductDetailsScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
+  const productId = params.id;
+  const product = products.find((p) => p.id === Number(productId));
 
   const [selectedSize, setSelectedSize] = useState("M");
   const [selectedColor, setSelectedColor] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const scrollViewRef = useRef<ScrollView>(null);
 
-  const product = {
-    id: 1,
-    name: "Oversized Hoodie",
-    price: 60.0,
-    rating: 4.4,
-    description:
-      "Comfortable oversized hoodie designed for casual wear, keeping you warm, stylish, and effortlessly trendy daily.",
-    images: [
-      "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=600&h=800&fit=crop",
-    ],
+  if (!product) {
+    return (
+      <View style={styles.container}>
+        <Text>Product not found</Text>
+      </View>
+    );
+  }
+
+  const handlePrevImage = () => {
+    if (currentImageIndex > 0) {
+      const newIndex = currentImageIndex - 1;
+      scrollViewRef.current?.scrollTo({ x: newIndex * width, animated: true });
+      setCurrentImageIndex(newIndex);
+    }
+  };
+
+  const handleNextImage = () => {
+    if (currentImageIndex < product.images.length - 1) {
+      const newIndex = currentImageIndex + 1;
+      scrollViewRef.current?.scrollTo({ x: newIndex * width, animated: true });
+      setCurrentImageIndex(newIndex);
+    }
   };
 
   return (
@@ -75,6 +87,7 @@ export default function ProductDetailsScreen() {
         <View style={styles.imageSection}>
           <View style={styles.imageContainer}>
             <ScrollView
+              ref={scrollViewRef}
               horizontal
               pagingEnabled
               showsHorizontalScrollIndicator={false}
@@ -110,10 +123,10 @@ export default function ProductDetailsScreen() {
           </View>
 
           {/* Navigation Arrows */}
-          <TouchableOpacity style={styles.prevArrow}>
+          <TouchableOpacity style={styles.prevArrow} onPress={handlePrevImage}>
             <Ionicons name="chevron-back" size={24} color={COLORS.text} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.nextArrow}>
+          <TouchableOpacity style={styles.nextArrow} onPress={handleNextImage}>
             <Ionicons name="chevron-forward" size={24} color={COLORS.text} />
           </TouchableOpacity>
         </View>

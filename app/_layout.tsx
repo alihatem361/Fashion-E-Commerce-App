@@ -7,11 +7,10 @@ import {
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { Text, View, useColorScheme as useNativeColorScheme } from "react-native";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { useColorScheme as useNativeColorScheme } from "react-native";
 
 export const unstable_settings = {
   anchor: "(tabs)",
@@ -83,6 +82,10 @@ export default function RootLayout() {
           options={{ headerShown: false, presentation: "card" }}
         />
         <Stack.Screen name="test" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="category-details"
+          options={{ headerShown: false, presentation: "card" }}
+        />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

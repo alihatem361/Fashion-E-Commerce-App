@@ -1,3 +1,4 @@
+import { categories, products } from "@/constants/data";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
@@ -23,41 +24,6 @@ const COLORS = {
   white: "#FFFFFF",
   card: "#F5E6FF",
 };
-
-const categories = [
-  { id: 1, name: "Casual", icon: "shirt-outline" },
-  { id: 2, name: "Business", icon: "briefcase-outline" },
-  { id: 3, name: "Sport", icon: "bicycle-outline" },
-  { id: 4, name: "Classic", icon: "diamond-outline" },
-  { id: 5, name: "Trend", icon: "trending-up-outline" },
-];
-
-const products = [
-  {
-    id: 1,
-    name: "Oversized Hoodie",
-    price: 60.0,
-    rating: 4.4,
-    image:
-      "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=500&fit=crop",
-  },
-  {
-    id: 2,
-    name: "Classic Hoodie",
-    price: 45.0,
-    rating: 4.2,
-    image:
-      "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=500&fit=crop",
-  },
-  {
-    id: 3,
-    name: "Pullover",
-    price: 55.0,
-    rating: 4.5,
-    image:
-      "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=500&fit=crop",
-  },
-];
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -117,7 +83,16 @@ export default function HomeScreen() {
         <View style={styles.categoriesContainer}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {categories.map((category) => (
-              <TouchableOpacity key={category.id} style={styles.categoryItem}>
+              <TouchableOpacity
+                key={category.id}
+                style={styles.categoryItem}
+                onPress={() =>
+                  router.push({
+                    pathname: "/category-details",
+                    params: { id: category.id },
+                  })
+                }
+              >
                 <View style={styles.categoryIcon}>
                   <Ionicons
                     name={category.icon as any}
@@ -137,7 +112,12 @@ export default function HomeScreen() {
             <TouchableOpacity
               key={product.id}
               style={styles.productCard}
-              onPress={() => router.push("/product-details")}
+              onPress={() =>
+                router.push({
+                  pathname: "/product-details",
+                  params: { id: product.id },
+                })
+              }
             >
               <View style={styles.productImageContainer}>
                 <Image
