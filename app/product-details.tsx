@@ -3,6 +3,8 @@ import { COLORS, SCREEN } from "@/constants/styles";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useRef, useState } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 import {
   Image,
   ScrollView,
@@ -24,6 +26,7 @@ export default function ProductDetailsScreen() {
   const params = useLocalSearchParams();
   const productId = params.id;
   const product = products.find((p) => p.id === Number(productId));
+  const insets = useSafeAreaInsets();
 
   const [selectedSize, setSelectedSize] = useState("M");
   const [selectedColor, setSelectedColor] = useState(1);
@@ -204,7 +207,7 @@ export default function ProductDetailsScreen() {
       </ScrollView>
 
       {/* Bottom Bar */}
-      <View style={styles.bottomBar}>
+      <View style={[styles.bottomBar, { paddingBottom: 16 + insets.bottom }]}>
         <TouchableOpacity
           style={styles.cartIconButton}
           onPress={() => router.push("/(tabs)/cart")}
@@ -438,7 +441,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 12,
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingTop: 16,
     backgroundColor: COLORS.white,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
