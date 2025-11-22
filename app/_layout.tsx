@@ -7,7 +7,11 @@ import {
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import { Text, View, useColorScheme as useNativeColorScheme } from "react-native";
+import {
+  Text,
+  View,
+  useColorScheme as useNativeColorScheme,
+} from "react-native";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/use-color-scheme";
@@ -74,17 +78,17 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="onboarding" />
+        <Stack.Screen name="(tabs)" />
         <Stack.Screen
           name="product-details"
           options={{ headerShown: false, presentation: "card" }}
         />
-        <Stack.Screen name="test" options={{ headerShown: false }} />
+        <Stack.Screen name="test" />
         <Stack.Screen
           name="category-details"
-          options={{ headerShown: false, presentation: "card" }}
+          options={{ presentation: "card" }}
         />
       </Stack>
       <StatusBar style="auto" />

@@ -205,7 +205,10 @@ export default function ProductDetailsScreen() {
 
       {/* Bottom Bar */}
       <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.cartIconButton}>
+        <TouchableOpacity
+          style={styles.cartIconButton}
+          onPress={() => router.push("/(tabs)/cart")}
+        >
           <Ionicons name="cart-outline" size={24} color={COLORS.text} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.addToCartButton}>
