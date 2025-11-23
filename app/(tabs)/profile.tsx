@@ -56,6 +56,11 @@ export default function ProfileScreen() {
     router.replace("/onboarding");
   };
 
+  const handleLogout = async () => {
+    await AsyncStorage.setItem("isLoggedIn", "false");
+    router.replace("/login");
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -122,7 +127,7 @@ export default function ProfileScreen() {
         </TouchableOpacity>
 
         {/* Logout Button */}
-        <TouchableOpacity style={styles.logoutButton}>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Ionicons name="log-out-outline" size={20} color={COLORS.text} />
           <Text style={styles.logoutButtonText}>Logout</Text>
         </TouchableOpacity>

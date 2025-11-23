@@ -36,11 +36,17 @@ export default function RootLayout() {
           "hasCompletedOnboarding"
         );
 
-        // Set the initial route based on onboarding status
-        if (!hasCompleted) {
-          setInitialRoute("/onboarding");
-        } else {
+        const isLoggedIn = await AsyncStorage.getItem("isLoggedIn");
+
+        if (isLoggedIn === "true") {
           setInitialRoute("/(tabs)");
+        } else {
+          // Set the initial route based on onboarding status
+          if (!hasCompleted) {
+            setInitialRoute("/onboarding");
+          } else {
+            setInitialRoute("/login");
+          }
         }
       } catch (error) {
         console.error("Error checking onboarding:", error);
@@ -80,6 +86,11 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="onboarding" />
+        <Stack.Screen name="login" />
+        <Stack.Screen name="register" />
+        <Stack.Screen name="forget-password" />
+        <Stack.Screen name="otp-verification" />
+        <Stack.Screen name="reset-password" />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen
           name="product-details"
@@ -91,6 +102,7 @@ export default function RootLayout() {
           options={{ presentation: "card" }}
         />
       </Stack>
+
       <StatusBar style="auto" />
     </ThemeProvider>
   );
