@@ -180,7 +180,7 @@ export default function ResetPasswordScreen() {
                 </TouchableOpacity>
               </View>
               {confirmPassword.length > 0 && password !== confirmPassword && (
-                <Text style={styles.errorText}>Passwords don't match</Text>
+                <Text style={styles.errorText}>Passwords don&apos;t match</Text>
               )}
             </View>
 
@@ -209,7 +209,7 @@ export default function ResetPasswordScreen() {
                 color={COLORS.primary}
               />
               <Text style={styles.infoText}>
-                After resetting, you'll be redirected to login with your new
+                After resetting, you&apos;ll be redirected to login with your new
                 password
               </Text>
             </View>

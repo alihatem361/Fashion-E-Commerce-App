@@ -56,7 +56,7 @@ export default function ForgetPasswordScreen() {
             </View>
             <Text style={styles.title}>Forgot Password?</Text>
             <Text style={styles.subtitle}>
-              Don't worry! Enter your email and we'll send you a code to reset
+              Don&apos;t worry! Enter your email and we&apos;ll send you a code to reset
               your password
             </Text>
           </View>
