@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
+import { Formik } from "formik";
 import { useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -12,6 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import * as Yup from "yup";
 
 const COLORS = {
   background: "#FDF5FF",
@@ -24,16 +26,24 @@ const COLORS = {
   red: "#FF4D67",
 };
 
+// Validation Schema
+const loginValidationSchema = Yup.object().shape({
+  email: Yup.string()
+    .email("Please enter a valid email address")
+    .required("Email is required"),
+  password: Yup.string()
+    .min(8, "Password must be at least 8 characters")
+    .required("Password is required"),
+});
+
 export default function LoginScreen() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
-  const handleLogin = async () => {
+  const handleLogin = async (values: { email: string; password: string }) => {
     // TODO: Implement login logic
-    console.log("Login:", { email, password, rememberMe });
+    console.log("Login:", { ...values, rememberMe });
 
     // Save login state to AsyncStorage
     await AsyncStorage.setItem("isLoggedIn", "true");
@@ -64,115 +74,170 @@ export default function LoginScreen() {
           </View>
 
           {/* Form Section */}
-          <View style={styles.formContainer}>
-            {/* Email Field */}
-            <View style={styles.fieldContainer}>
-              <Text style={styles.label}>Email Address</Text>
-              <View style={styles.inputContainer}>
-                <View style={styles.iconWrapper}>
-                  <Ionicons name="mail" size={20} color={COLORS.primary} />
-                </View>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter your email"
-                  placeholderTextColor={COLORS.textLight}
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoComplete="email"
-                />
-              </View>
-            </View>
-
-            {/* Password Field */}
-            <View style={styles.fieldContainer}>
-              <Text style={styles.label}>Password</Text>
-              <View style={styles.inputContainer}>
-                <View style={styles.iconWrapper}>
-                  <Ionicons
-                    name="lock-closed"
-                    size={20}
-                    color={COLORS.primary}
-                  />
-                </View>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter your password"
-                  placeholderTextColor={COLORS.textLight}
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={!showPassword}
-                  autoCapitalize="none"
-                  autoComplete="password"
-                />
-                <TouchableOpacity
-                  onPress={() => setShowPassword(!showPassword)}
-                  style={styles.eyeIcon}
-                >
-                  <Ionicons
-                    name={showPassword ? "eye-off" : "eye"}
-                    size={22}
-                    color={COLORS.textLight}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* Remember Me & Forgot Password */}
-            <View style={styles.optionsContainer}>
-              <TouchableOpacity
-                style={styles.rememberContainer}
-                onPress={() => setRememberMe(!rememberMe)}
-              >
-                <View
-                  style={[styles.checkbox, rememberMe && styles.checkboxActive]}
-                >
-                  {rememberMe && (
-                    <Ionicons name="checkmark" size={16} color={COLORS.white} />
+          <Formik
+            initialValues={{ email: "", password: "" }}
+            validationSchema={loginValidationSchema}
+            onSubmit={handleLogin}
+          >
+            {({
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              values,
+              errors,
+              touched,
+            }) => (
+              <View style={styles.formContainer}>
+                {/* Email Field */}
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.label}>Email Address</Text>
+                  <View
+                    style={[
+                      styles.inputContainer,
+                      touched.email &&
+                        errors.email &&
+                        styles.inputContainerError,
+                    ]}
+                  >
+                    <View style={styles.iconWrapper}>
+                      <Ionicons name="mail" size={20} color={COLORS.primary} />
+                    </View>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Enter your email"
+                      placeholderTextColor={COLORS.textLight}
+                      value={values.email}
+                      onChangeText={handleChange("email")}
+                      onBlur={handleBlur("email")}
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      autoComplete="email"
+                    />
+                  </View>
+                  {touched.email && errors.email && (
+                    <Text style={styles.errorText}>{errors.email}</Text>
                   )}
                 </View>
-                <Text style={styles.rememberText}>Remember me</Text>
-              </TouchableOpacity>
 
-              <TouchableOpacity onPress={() => router.push("/forget-password")}>
-                <Text style={styles.forgotText}>Forgot Password?</Text>
-              </TouchableOpacity>
-            </View>
+                {/* Password Field */}
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.label}>Password</Text>
+                  <View
+                    style={[
+                      styles.inputContainer,
+                      touched.password &&
+                        errors.password &&
+                        styles.inputContainerError,
+                    ]}
+                  >
+                    <View style={styles.iconWrapper}>
+                      <Ionicons
+                        name="lock-closed"
+                        size={20}
+                        color={COLORS.primary}
+                      />
+                    </View>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Enter your password"
+                      placeholderTextColor={COLORS.textLight}
+                      value={values.password}
+                      onChangeText={handleChange("password")}
+                      onBlur={handleBlur("password")}
+                      secureTextEntry={!showPassword}
+                      autoCapitalize="none"
+                      autoComplete="password"
+                    />
+                    <TouchableOpacity
+                      onPress={() => setShowPassword(!showPassword)}
+                      style={styles.eyeIcon}
+                    >
+                      <Ionicons
+                        name={showPassword ? "eye-off" : "eye"}
+                        size={22}
+                        color={COLORS.textLight}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  {touched.password && errors.password && (
+                    <Text style={styles.errorText}>{errors.password}</Text>
+                  )}
+                </View>
 
-            {/* Login Button */}
-            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-              <Text style={styles.loginButtonText}>Sign In</Text>
-              <Ionicons name="arrow-forward" size={20} color={COLORS.white} />
-            </TouchableOpacity>
+                {/* Remember Me & Forgot Password */}
+                <View style={styles.optionsContainer}>
+                  <TouchableOpacity
+                    style={styles.rememberContainer}
+                    onPress={() => setRememberMe(!rememberMe)}
+                  >
+                    <View
+                      style={[
+                        styles.checkbox,
+                        rememberMe && styles.checkboxActive,
+                      ]}
+                    >
+                      {rememberMe && (
+                        <Ionicons
+                          name="checkmark"
+                          size={16}
+                          color={COLORS.white}
+                        />
+                      )}
+                    </View>
+                    <Text style={styles.rememberText}>Remember me</Text>
+                  </TouchableOpacity>
 
-            {/* Social Login */}
-            <View style={styles.dividerContainer}>
-              <View style={styles.divider} />
-              <Text style={styles.dividerText}>Or continue with</Text>
-              <View style={styles.divider} />
-            </View>
+                  <TouchableOpacity
+                    onPress={() => router.push("/forget-password")}
+                  >
+                    <Text style={styles.forgotText}>Forgot Password?</Text>
+                  </TouchableOpacity>
+                </View>
 
-            <View style={styles.socialContainer}>
-              <TouchableOpacity style={styles.socialButton}>
-                <Ionicons name="logo-google" size={24} color="#DB4437" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.socialButton}>
-                <Ionicons name="logo-facebook" size={24} color="#4267B2" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.socialButton}>
-                <Ionicons name="logo-apple" size={24} color={COLORS.text} />
-              </TouchableOpacity>
-            </View>
+                {/* Login Button */}
+                <TouchableOpacity
+                  style={styles.loginButton}
+                  onPress={() => handleSubmit()}
+                >
+                  <Text style={styles.loginButtonText}>Sign In</Text>
+                  <Ionicons
+                    name="arrow-forward"
+                    size={20}
+                    color={COLORS.white}
+                  />
+                </TouchableOpacity>
 
-            {/* Sign Up Link */}
-            <View style={styles.footerContainer}>
-              <Text style={styles.footerText}>Don&apos;t have an account? </Text>
-              <TouchableOpacity onPress={() => router.push("/register")}>
-                <Text style={styles.footerLink}>Sign Up</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+                {/* Social Login */}
+                <View style={styles.dividerContainer}>
+                  <View style={styles.divider} />
+                  <Text style={styles.dividerText}>Or continue with</Text>
+                  <View style={styles.divider} />
+                </View>
+
+                <View style={styles.socialContainer}>
+                  <TouchableOpacity style={styles.socialButton}>
+                    <Ionicons name="logo-google" size={24} color="#DB4437" />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.socialButton}>
+                    <Ionicons name="logo-facebook" size={24} color="#4267B2" />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.socialButton}>
+                    <Ionicons name="logo-apple" size={24} color={COLORS.text} />
+                  </TouchableOpacity>
+                </View>
+
+                {/* Sign Up Link */}
+                <View style={styles.footerContainer}>
+                  <Text style={styles.footerText}>
+                    Don&apos;t have an account?{" "}
+                  </Text>
+                  <TouchableOpacity onPress={() => router.push("/register")}>
+                    <Text style={styles.footerLink}>Sign Up</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+          </Formik>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -223,6 +288,15 @@ const styles = StyleSheet.create({
   },
   fieldContainer: {
     marginBottom: 24,
+  },
+  errorText: {
+    color: COLORS.red,
+    fontSize: 13,
+    marginTop: 6,
+    marginLeft: 4,
+  },
+  inputContainerError: {
+    borderColor: COLORS.red,
   },
   label: {
     fontSize: 15,
