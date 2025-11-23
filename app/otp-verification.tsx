@@ -132,7 +132,9 @@ export default function OTPVerificationScreen() {
             {otp.map((digit, index) => (
               <View key={index} style={styles.otpInputWrapper}>
                 <TextInput
-                  ref={(ref) => (inputRefs.current[index] = ref)}
+                  ref={(ref) => {
+                    inputRefs.current[index] = ref;
+                  }}
                   style={[
                     styles.otpInput,
                     digit ? styles.otpInputFilled : null,
@@ -174,7 +176,9 @@ export default function OTPVerificationScreen() {
 
           {/* Resend Code */}
           <View style={styles.resendContainer}>
-            <Text style={styles.resendText}>Didn't receive the code? </Text>
+            <Text style={styles.resendText}>
+              Didn&apos;t receive the code?{" "}
+            </Text>
             <TouchableOpacity onPress={handleResendCode} disabled={timer > 0}>
               <Text
                 style={[
