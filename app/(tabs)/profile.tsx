@@ -1,8 +1,10 @@
+import { useAuthStore } from "@/stores/authStore";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import {
+  ActivityIndicator,
   ScrollView,
   StyleSheet,
   Text,
@@ -50,6 +52,11 @@ const profileSections = [
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const { user, logout, restoreSession } = useAuthStore();
+
+  useEffect(() => {
+    restoreSession();
+  }, [restoreSession]);
 
   const handleResetOnboarding = async () => {
     await AsyncStorage.removeItem("hasCompletedOnboarding");
@@ -57,9 +64,23 @@ export default function ProfileScreen() {
   };
 
   const handleLogout = async () => {
+    await logout();
     await AsyncStorage.setItem("isLoggedIn", "false");
     router.replace("/login");
   };
+
+  if (!user) {
+    return (
+      <View
+        style={[
+          styles.container,
+          { justifyContent: "center", alignItems: "center" },
+        ]}
+      >
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -79,14 +100,33 @@ export default function ProfileScreen() {
         <View style={styles.profileCard}>
           <View style={styles.avatarContainer}>
             <View style={styles.avatar}>
-              <Ionicons name="person" size={40} color={COLORS.white} />
+              <Text style={styles.avatarText}>
+                {user.name.charAt(0).toUpperCase()}
+              </Text>
             </View>
             <TouchableOpacity style={styles.editAvatarButton}>
               <Ionicons name="camera" size={16} color={COLORS.white} />
             </TouchableOpacity>
           </View>
-          <Text style={styles.profileName}>Fashion Lover</Text>
-          <Text style={styles.profileEmail}>fashionlover@example.com</Text>
+          <Text style={styles.profileName}>{user.name}</Text>
+          <Text style={styles.profileEmail}>{user.email}</Text>
+          <View style={styles.badgeContainer}>
+            <View style={styles.badge}>
+              <Ionicons
+                name={
+                  user.isEmailVerified ? "checkmark-circle" : "alert-circle"
+                }
+                size={14}
+                color={user.isEmailVerified ? "#4CAF50" : COLORS.textLight}
+              />
+              <Text style={styles.badgeText}>
+                {user.isEmailVerified ? "Verified" : "Not Verified"}
+              </Text>
+            </View>
+            <View style={[styles.badge, styles.roleBadge]}>
+              <Text style={styles.badgeText}>{user.role}</Text>
+            </View>
+          </View>
         </View>
 
         {/* Profile Sections */}
@@ -189,6 +229,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  avatarText: {
+    fontSize: 32,
+    fontWeight: "700",
+    color: COLORS.white,
+  },
   editAvatarButton: {
     position: "absolute",
     bottom: 0,
@@ -211,6 +256,28 @@ const styles = StyleSheet.create({
   profileEmail: {
     fontSize: 14,
     color: COLORS.textLight,
+  },
+  badgeContainer: {
+    flexDirection: "row",
+    gap: 8,
+    marginTop: 12,
+  },
+  badge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: COLORS.card,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
+  roleBadge: {
+    backgroundColor: COLORS.secondary,
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: COLORS.text,
   },
   section: {
     marginBottom: 24,

@@ -1,9 +1,10 @@
+import { useAuthStore } from "@/stores/authStore";
 import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { Formik } from "formik";
 import { useState } from "react";
 import {
+  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -40,15 +41,18 @@ export default function LoginScreen() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const { login, isLoading, error, clearError } = useAuthStore();
 
   const handleLogin = async (values: { email: string; password: string }) => {
-    // TODO: Implement login logic
-    console.log("Login:", { ...values, rememberMe });
-
-    // Save login state to AsyncStorage
-    await AsyncStorage.setItem("isLoggedIn", "true");
-
-    router.replace("/(tabs)");
+    try {
+      clearError();
+      await login(values.email, values.password);
+      // Navigate to tabs on successful login
+      router.replace("/(tabs)");
+    } catch (error) {
+      // Error is handled by the store
+      console.error("Login failed:", error);
+    }
   };
 
   return (
@@ -88,6 +92,18 @@ export default function LoginScreen() {
               touched,
             }) => (
               <View style={styles.formContainer}>
+                {/* Error Message */}
+                {error && (
+                  <View style={styles.errorContainer}>
+                    <Ionicons
+                      name="alert-circle"
+                      size={20}
+                      color={COLORS.white}
+                    />
+                    <Text style={styles.errorMessage}>{error}</Text>
+                  </View>
+                )}
+
                 {/* Email Field */}
                 <View style={styles.fieldContainer}>
                   <Text style={styles.label}>Email Address</Text>
@@ -196,15 +212,25 @@ export default function LoginScreen() {
 
                 {/* Login Button */}
                 <TouchableOpacity
-                  style={styles.loginButton}
+                  style={[
+                    styles.loginButton,
+                    isLoading && styles.loginButtonDisabled,
+                  ]}
                   onPress={() => handleSubmit()}
+                  disabled={isLoading}
                 >
-                  <Text style={styles.loginButtonText}>Sign In</Text>
-                  <Ionicons
-                    name="arrow-forward"
-                    size={20}
-                    color={COLORS.white}
-                  />
+                  {isLoading ? (
+                    <ActivityIndicator size="small" color={COLORS.white} />
+                  ) : (
+                    <>
+                      <Text style={styles.loginButtonText}>Sign In</Text>
+                      <Ionicons
+                        name="arrow-forward"
+                        size={20}
+                        color={COLORS.white}
+                      />
+                    </>
+                  )}
                 </TouchableOpacity>
 
                 {/* Social Login */}
@@ -285,6 +311,20 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: 20,
     paddingTop: 20,
+  },
+  errorContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: COLORS.red,
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+    gap: 8,
+  },
+  errorMessage: {
+    color: COLORS.white,
+    fontSize: 14,
+    flex: 1,
   },
   fieldContainer: {
     marginBottom: 24,
@@ -388,6 +428,9 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontSize: 17,
     fontWeight: "600",
+  },
+  loginButtonDisabled: {
+    opacity: 0.6,
   },
   dividerContainer: {
     flexDirection: "row",
